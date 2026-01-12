@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<h2>Employee Dashboard</h2>
+
+<form method="post">
+    <select name="Dept" multiple>
+        {% for d in depts %}
+        <option value="{{ d }}">{{ d }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<div id="g1"></div>
+<div id="g2"></div>
+<div id="g3"></div>
+
+<script>
+    Plotly.newPlot("g1", {{ graph1|safe }});
+    Plotly.newPlot("g2", {{ graph2|safe }});
+    Plotly.newPlot("g3", {{ graph3|safe }});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+# Load data
+df = pd.read_csv("cleaned_emp.csv")
+
+st.title("Employee Dashboard")
+
+# Dropdown filter
+dept = st.multiselect(
+    "Select Department",
+    options=df["Dept"].unique()
+)
+
+# Filtering
+if dept:
+    filtereddf = df[df["Dept"].isin(dept)]
+else:
+    filtereddf = df
+
+# Graph 1: Line chart
+fig1 = px.line(
+    filtereddf,
+    x="Experience",
+    y="Sal",
+    color="Dept",
+    title="Experience vs Salary"
+)
+st.plotly_chart(fig1)
+
+# Graph 2: Bar chart
+fig2 = px.bar(
+    filtereddf,
+    x="Dept",
+    y="Sal",
+    title="Salary by Department"
+)
+st.plotly_chart(fig2)
+
+# Graph 3: Box plot
+fig3 = px.box(
+    filtereddf,
+    x="Dept",
+    y="Per_score",
+    title="Performance by Department"
+)
+st.plotly_chart(fig3)

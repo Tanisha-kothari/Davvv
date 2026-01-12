@@ -1,0 +1,37 @@
+from flask import Flask, render_template, request
+import pandas as pd
+import plotly.express as px
+import json
+
+app = Flask(__name__)
+
+df = pd.read_csv("cleaned_emp.csv")
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+
+    selected = request.form.getlist("Dept")
+
+    if selected:
+        filtereddf = df[df["Dept"].isin(selected)]
+    else:
+        filtereddf = df
+
+    fig1 = px.line(filtereddf, x="Experience", y="Sal", color="Dept")
+    fig2 = px.bar(filtereddf, x="Dept", y="Sal")
+    fig3 = px.box(filtereddf, x="Dept", y="Per_score")
+
+    graph1 = json.dumps(fig1, cls=px.utils.PlotlyJSONEncoder)
+    graph2 = json.dumps(fig2, cls=px.utils.PlotlyJSONEncoder)
+    graph3 = json.dumps(fig3, cls=px.utils.PlotlyJSONEncoder)
+
+    return render_template(
+        "index.html",
+        depts=df["Dept"].unique(),
+        graph1=graph1,
+        graph2=graph2,
+        graph3=graph3
+    )
+
+if __name__ == "__main__":
+    app.run(debug=True)

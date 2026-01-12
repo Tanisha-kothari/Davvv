@@ -1,0 +1,59 @@
+!pip install dash
+import pandas as pd
+import numpy as np
+import plotly.express as px
+from dash import Dash, dcc, html, Input, Output
+df = pd.read_csv(r"C:\Users\tanisha\Downloads\emp (1).csv")
+app = Dash(__name__)
+app.layout = html.Div(
+    [
+        html.H1("Employee Dashboard"),
+    dcc.Dropdown(
+        id="Dept",
+        options=[{"label": d, "value": d} for d in df["Dept"].unique()],
+        multi=True
+    ),
+
+    dcc.Graph(id="g1"),
+    dcc.Graph(id="g2"),
+    dcc.Graph(id="g3")
+])
+@app.callback(
+    [
+        Output("g1", "figure"),
+        Output("g2", "figure"),
+        Output("g3", "figure")
+    ],
+    Input("Dept", "value")
+)
+def update(sdepts):
+
+    if sdepts is None or len(sdepts) == 0:
+        filtereddf = df
+    else:
+        filtereddf = df[df["Dept"].isin(sdepts)]
+
+    fig1 = px.line(
+        filtereddf,
+        x="Experience",
+        y="Sal",
+        color="Dept"
+    )
+
+    fig2 = px.bar(
+        filtereddf,
+        x="Dept",
+        y="Sal"
+    )
+
+    fig3 = px.box(
+        filtereddf,
+        x="Dept",
+        y="Per_score"
+    )
+
+    return fig1, fig2, fig3
+
+
+if __name__ == "__main__" :
+    app.run(port= 8050)
